@@ -1,0 +1,266 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #141e30, #243b55);
+  color: #f7fafc;
+  overflow-x: hidden;
+}
+
+.game {
+  min-height: 100vh;
+  display: grid;
+  place-items: safe center;
+  padding: 24px;
+}
+
+.card {
+  width: min(92vw, 430px);
+  padding: 32px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  backdrop-filter: blur(14px);
+  will-change: transform;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #8ee4ff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 3.4rem);
+}
+
+.status {
+  min-height: 28px;
+  margin: 18px 0 24px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  will-change: transform, opacity;
+}
+
+/* ---------- Board ---------- */
+
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  will-change: transform;
+}
+
+.cell {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: #f8fafc;
+  color: #182033;
+  cursor: pointer;
+  overflow: hidden;
+  will-change: transform;
+  transition: background 0.18s ease, box-shadow 0.28s ease;
+}
+
+.cell:hover:not(:disabled):not(.filled) {
+  background: #dff7ff;
+}
+
+.cell:disabled {
+  cursor: not-allowed;
+}
+
+.cell:focus-visible,
+.reset:focus-visible {
+  outline: 3px solid #8ee4ff;
+  outline-offset: 3px;
+}
+
+/* Ripple that expands from the click point */
+.ripple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: rgba(94, 231, 255, 0.55);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* SVG X / O marks — drawn with stroke-dashoffset */
+.mark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.mark path {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+
+.mark--x path {
+  stroke: #d81b48;
+}
+
+.mark--o path {
+  stroke: #0a6fd0;
+}
+
+.cell.winner {
+  background: #eafff2;
+  box-shadow:
+    0 0 0 3px rgba(124, 255, 178, 0.9),
+    0 0 34px rgba(124, 255, 178, 0.75),
+    0 0 70px rgba(124, 255, 178, 0.35);
+}
+
+.cell.dud {
+  background: #e4e6ee;
+}
+
+/* Winning strike-through line */
+.strike {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 3;
+}
+
+.strike path {
+  fill: none;
+  stroke: #0a7f46;
+  stroke-width: 9;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 10px rgba(124, 255, 178, 0.95));
+}
+
+/* ---------- Reset button ---------- */
+
+.reset {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #8ee4ff;
+  color: #102033;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  will-change: transform;
+  transition: background 0.18s ease;
+}
+
+.reset:hover {
+  background: #b7efff;
+}
+
+/* ---------- Effects layers ---------- */
+
+.flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 30;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(255, 255, 255, 0.9),
+    rgba(142, 228, 255, 0.35) 45%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  will-change: opacity;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 40;
+}
+
+/* Outer node: ballistics (translate + tumble). Perspective makes the
+   inner face's rotateY read as a real 3D flip. */
+.cf {
+  position: absolute;
+  top: 0;
+  left: 0;
+  perspective: 500px;
+  will-change: transform;
+}
+
+/* Inner node: the flutter. Separate element so two anime instances
+   never fight over one transform string. */
+.cf__face {
+  display: block;
+  will-change: transform;
+  backface-visibility: visible;
+}
+
+.cf__face.foil {
+  background-image: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0) 38%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+}
+
+.cf__glyph {
+  display: block;
+  line-height: 1;
+  will-change: transform, opacity;
+}
+
+/* Expanding shockwave ring */
+.shockwave {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 50%;
+  border: 3px solid rgba(142, 228, 255, 0.9);
+  pointer-events: none;
+  z-index: 35;
+  will-change: transform, opacity;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .cell,
+  .reset {
+    transition-duration: 0.01ms;
+  }
+
+  .flash {
+    display: none;
+  }
+}

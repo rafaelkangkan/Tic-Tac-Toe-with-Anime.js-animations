@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="flash" class="flash" aria-hidden="true"></div>
+  <div id="confetti-layer" class="confetti-layer" aria-hidden="true"></div>
+
+  <main class="game">
+    <section class="card" id="card">
+      <p class="eyebrow">Two Player Game</p>
+      <h1>Tic Tac Toe</h1>
+      <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Player X's turn</p>
+
+      <div class="board" id="board" role="group" aria-label="Tic Tac Toe board">
+        <button class="cell" data-index="0" aria-label="Cell 1, empty"></button>
+        <button class="cell" data-index="1" aria-label="Cell 2, empty"></button>
+        <button class="cell" data-index="2" aria-label="Cell 3, empty"></button>
+        <button class="cell" data-index="3" aria-label="Cell 4, empty"></button>
+        <button class="cell" data-index="4" aria-label="Cell 5, empty"></button>
+        <button class="cell" data-index="5" aria-label="Cell 6, empty"></button>
+        <button class="cell" data-index="6" aria-label="Cell 7, empty"></button>
+        <button class="cell" data-index="7" aria-label="Cell 8, empty"></button>
+        <button class="cell" data-index="8" aria-label="Cell 9, empty"></button>
+        <svg class="strike" id="strike" aria-hidden="true"></svg>
+      </div>
+
+      <button id="reset" class="reset">New Game</button>
+    </section>
+  </main>
+
+  <script src="vendor/anime.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
